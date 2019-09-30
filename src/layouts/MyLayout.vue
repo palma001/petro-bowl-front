@@ -71,8 +71,7 @@ export default {
   name: 'MyLayout',
   data () {
     return {
-      drawer: true,
-      miniState: true,
+      drawer: false,
       columns: [
         {
           name: 'QID',
