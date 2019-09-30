@@ -20,6 +20,7 @@
     "axios": "^0.18.1",
     "buefy": "^0.8.3",
     "element-ui": "^2.12.0",
+    "kservices": "git+https://oauth2:QaVQxKdiQpFzjo6fdCoU@gitlab.com/kdevelopers/soom-services.git",
     "kui-library": "git+https://oauth2:PXneCyd2TrMm3NQzVQyY@gitlab.com/kdevelopers/kui-library.git",
     "postcss-import": "^12.0.1",
     "quasar": "^1.0.0",

@@ -32,14 +32,13 @@
 
     <q-drawer side="right"
       v-model="drawer"
-      show-if-above
-      :width="800"
-      :breakpoint="500"
-      :mini-width="20"
       bordered
       overlay
       aria-placeholder="20px"
-      content-class="bg-blue-1 q-pa-lg">
+      content-class="bg-blue-1 q-pa-lg"
+      :width="800"
+      :breakpoint="500"
+      :mini-width="20">
       <div>
         <div class="row bg-primary text-white text-h6 text-center"
           style="height: 30px">
@@ -72,6 +71,7 @@ export default {
   data () {
     return {
       drawer: false,
+      miniState: false,
       columns: [
         {
           name: 'QID',
