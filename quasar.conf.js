@@ -9,7 +9,8 @@ module.exports = function (ctx) {
       'i18n',
       'axios',
       'kui-library',
-      'kservices'
+      'kservices',
+      'auth'
     ],
 
     css: [
