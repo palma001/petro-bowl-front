@@ -8,7 +8,8 @@ module.exports = function (ctx) {
     boot: [
       'i18n',
       'axios',
-      'kui-library'
+      'kui-library',
+      'kservices'
     ],
 
     css: [

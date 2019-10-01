@@ -9,9 +9,9 @@
             label="Toss Up"/>
         </div>
         <div class="q-ml-sm col-lg-10 col-md-10 col-sm-8 col-xs-8 self-center">
-          <q-toolbar-title class="title">
+          <div class="title">
             QID #001: What color is the sky?
-          </q-toolbar-title>
+          </div>
         </div>
       </div>
       <div class="row q-pa-md justify-around">
@@ -41,27 +41,31 @@
                 class="score q-px-xl q-py-xs"
                 align="center"
                 outline
-                text-color="primary"
-                :label="score"/>
+                text-color="primary">
+                {{team.score}}
+              </q-btn>
             </div>
           </div>
           <div class="row q-pa-md justify-center">
             <div class="col-lg-6 col-md-7">
-              <q-btn color="positive"
-                :class="classBtn">
+              <q-btn
+                color="positive"
+                class="buttonF"
+                :disabled="sum[team.name]">
                 <q-icon center
                   size="50px"
                   name="check"
-                  :disabled="status.buttonG"
-                  @click="point(10)"/>
+                  @click="point(10, team.teamId)"/>
               </q-btn>
-              <q-btn color="negative"
-                :class="classBtn">
-                <q-icon center
+              <q-btn
+                color="negative"
+                class="buttonF"
+                :disabled="subtract[team.name]">
+                <q-icon
+                  center
                   size="50px"
                   name="close"
-                  :disabled="status.buttonF"
-                  @click="point(-5)"/>
+                  @click="point(-5, team.teamId)"/>
               </q-btn>
             </div>
             <div class="col-lg-6 col-md-5 col-sm-8 col-xs-8">
@@ -69,9 +73,9 @@
                 type="number"
                 class="bonus"
                 placeholder="Bonus"
-                v-model="team.name"
+                v-model="value[team.name]"
                 color="primary"
-                :disable="status.bonus"/>
+                :disabled="sum[team.name]"/>
             </div>
           </div>
         </div>
@@ -116,52 +120,66 @@ export default {
   name: 'ScoreKeeperComponent',
   data () {
     return {
-      status: {
-        buttonF: false,
-        buttonG: false,
-        bonus: false
-      },
-      classBtn: 'buttonF',
-      ponitQuestion: 0,
-      score: 2,
+      sum: {},
+      subtract: {},
+      value: {},
       getConfrontations: [],
+      points: 0,
       teams: [
         {
           teamId: 1,
-          name: 'UDO'
+          name: 'UDO',
+          score: 0
         },
         {
           teamId: 2,
-          name: 'IUTA'
+          name: 'IUTA',
+          score: 0
         }
       ]
     }
   },
   created () {
-    this.getServices()
+    // this.getServices()
   },
   methods: {
-    point (point) {
-      if (point > 0 && !this.status.buttonG) {
-        this.changeStatus(1)
-        this.ponitQuestion = point
-        this.score = 1
-      } else if (point < 0 && !this.status.buttonF) {
-        this.changeStatus(0)
-        this.ponitQuestion = point
-      }
+    point (point, id) {
+      this.teams.map(element => {
+        if (element.teamId === id) {
+          element.score += point
+          if (point < 0) {
+            console.log(this.sum)
+            this.sum[element.name] = true
+          }
+        }
+      })
+      // this.points = point
+      // this.id = id
+      // if (point > 0 && !this.status.buttonG) {
+      //   this.changeStatus(1)
+      // } else if (point < 0 && !this.status.buttonF) {
+      //   this.changeStatus(0)
+      // }
     },
     saveRecords () {
-      console.log(0)
+      this.teams.map(element => {
+        if (element.teamId === this.id) {
+          element.score += this.points
+          this.points = 0
+          this.id = 0
+          this.status.buttonF = false
+          this.status.bonus = false
+        }
+      })
     },
     changeStatus (data) {
-      if (data > 0) {
-        this.status.buttonF = !this.status.buttonF
-        this.status.bonus = !this.status.bonus
-      } else {
-        this.status.buttonG = !this.status.buttonG
-        this.status.bonus = !this.status.bonus
-      }
+      // if (data > 0) {
+      //   this.status.buttonF = !this.status.buttonF
+      //   this.status.bonus = !this.status.bonus
+      // } else {
+      //   this.status.buttonG = !this.status.buttonG
+      //   this.status.bonus = !this.status.bonus
+      // }
     },
     getServices () {
       console.log(this)
