@@ -8,7 +8,21 @@ const routes = [
     ]
   },
   {
-    path: '/',
+    path: '/scoreKeeper',
+    component: () => import('layouts/MyLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/ScoreKeeperComponent.vue') }
+    ]
+  },
+  {
+    path: '/dashboard',
+    component: () => import('layouts/MyLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/ScoreKeeperComponent.vue') }
+    ]
+  },
+  {
+    path: '/moderator',
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { path: '', component: () => import('pages/ScoreKeeperComponent.vue') }
