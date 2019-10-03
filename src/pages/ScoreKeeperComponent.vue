@@ -3,30 +3,38 @@
     <div class="q-pa-md">
       <div class="row q-pa-md justify-center">
         <div class="col-md-auto">
-          <q-btn class="buttonQ"
+          <q-btn
+            class="buttonQ"
             size="30px"
             color="green"
-            label="Toss Up"/>
+            label="Toss Up"
+            v-if="dataPints['question']['type'] === 'tossUp'"/>
+          <q-btn
+            class="buttonQ"
+            size="30px"
+            color="negative"
+            label="Bonus"
+            v-if="dataPints['question']['type'] === 'bonus'"/>
         </div>
         <div class="q-ml-sm col-lg-10 col-md-10 col-sm-8 col-xs-8 self-center">
           <div class="title">
-            QID #001: What color is the sky?
+            QID# {{ dataPints['question'].questionId }}: {{ dataPints['question'].question }}
           </div>
         </div>
       </div>
       <div class="row q-pa-md justify-around">
         <!-- first team column -->
-        <div class="col-md-5 col-sm-10 q-mt-lg bg-white" v-for="(team, index) in teams" :key="team.name">
+        <div class="col-md-5 col-sm-10 q-mt-lg bg-white">
           <!-- title - Team name -->
           <div class="row q-pa-md">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-4">
               <q-toolbar-title class="text-h4 text-white text-center bg-accent">
-                {{ (index === 0) ? 'A' : 'B'}}-Team:
+                A-Team:
               </q-toolbar-title>
             </div>
             <div class="col-lg-9 col-md-8 col-sm-8 col-xs-8">
               <q-toolbar-title class="text-h4 text-left bg-accent text-white text-bold">
-                {{team.name}}
+                {{teams[0].name}}
               </q-toolbar-title>
             </div>
           </div>
@@ -42,30 +50,34 @@
                 align="center"
                 outline
                 text-color="primary">
-                {{team.score}}
+                {{teams[0].score}}
               </q-btn>
             </div>
           </div>
           <div class="row q-pa-md justify-center">
-            <div class="col-lg-6 col-md-7">
+            <div
+              class="col-lg-6 col-md-7"
+              v-if="dataPints['question']['type'] === 'tossUp'">
               <q-btn
                 color="positive"
                 class="buttonF"
-                :disabled="sum[team.name]">
+                ref="buttonG"
+                :disabled="disabled.add1">
                 <q-icon center
                   size="50px"
                   name="check"
-                  @click="point(10, team.teamId)"/>
+                  @click="point(10, teams[0].teamId, 'add1')"/>
               </q-btn>
               <q-btn
                 color="negative"
                 class="buttonF"
-                :disabled="subtract[team.name]">
+                ref="buttonF"
+                :disabled="disabled.sub1">
                 <q-icon
                   center
                   size="50px"
                   name="close"
-                  @click="point(-5, team.teamId)"/>
+                  @click="point(-5, teams[0].teamId, 'sub1')"/>
               </q-btn>
             </div>
             <div class="col-lg-6 col-md-5 col-sm-8 col-xs-8">
@@ -73,9 +85,79 @@
                 type="number"
                 class="bonus"
                 placeholder="Bonus"
-                v-model="value[team.name]"
+                v-model="value.bonus1"
                 color="primary"
-                :disabled="sum[team.name]"/>
+                v-if="dataPints['question']['type'] === 'bonus'"
+                :disabled="disabled.bonus1"/>
+            </div>
+          </div>
+        </div>
+        <!-- first team column -->
+        <div class="col-md-5 col-sm-10 q-mt-lg bg-white">
+          <!-- title - Team name -->
+          <div class="row q-pa-md">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-4">
+              <q-toolbar-title class="text-h4 text-white text-center bg-accent">
+                A-Team:
+              </q-toolbar-title>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-8 col-xs-8">
+              <q-toolbar-title class="text-h4 text-left bg-accent text-white text-bold">
+                {{teams[1].name}}
+              </q-toolbar-title>
+            </div>
+          </div>
+          <div class="row q-pa-md justify-center">
+            <div class="col-12">
+              <q-toolbar-title class="title1 text-h3 text-center text-primary text-bold">
+                Score
+              </q-toolbar-title>
+            </div>
+            <div class="col-auto">
+              <q-btn size="50px"
+                class="score q-px-xl q-py-xs"
+                align="center"
+                outline
+                text-color="primary">
+                {{teams[1].score}}
+              </q-btn>
+            </div>
+          </div>
+          <div class="row q-pa-md justify-center">
+            <div class="col-lg-6 col-md-7"
+              v-if="dataPints['question']['type'] === 'tossUp'">
+              <q-btn
+                color="positive"
+                class="buttonF"
+                ref="buttonA"
+                :disabled="disabled.add2">
+                <q-icon center
+                  size="50px"
+                  name="check"
+                  @click="point(10, teams[1].teamId, 'add2')"/>
+              </q-btn>
+              <q-btn
+                color="negative"
+                class="buttonF"
+                ref="buttonB"
+                :disabled="disabled.sub2">
+                <q-icon
+                  center
+                  size="50px"
+                  name="close"
+                  @click="point(-5, teams[1].teamId, 'sub2')"/>
+              </q-btn>
+            </div>
+            <div class="col-lg-6 col-md-5 col-sm-8 col-xs-8">
+              <q-input
+                outlined
+                type="number"
+                class="bonus"
+                placeholder="Bonus"
+                v-model="value.bonus2"
+                color="primary"
+                v-if="dataPints['question']['type'] === 'bonus'"
+                :disabled="disabled.bonus2"/>
             </div>
           </div>
         </div>
@@ -120,11 +202,19 @@ export default {
   name: 'ScoreKeeperComponent',
   data () {
     return {
-      sum: {},
-      subtract: {},
-      value: {},
+      disabled: {
+        add1: false,
+        add2: false,
+        sub1: false,
+        sub2: false,
+        bonus1: false,
+        bonus2: false
+      },
+      value: {
+        bonus1: 0,
+        bonus2: 0
+      },
       getConfrontations: [],
-      points: 0,
       teams: [
         {
           teamId: 1,
@@ -136,53 +226,89 @@ export default {
           name: 'IUTA',
           score: 0
         }
+      ],
+      dataPints: {
+        id: null,
+        points: 0,
+        question: null
+      },
+      question: [
+        {
+          questionId: 1,
+          question: '¿Como estas?',
+          type: 'bonus'
+        },
+        {
+          questionId: 2,
+          question: 'What color is the sky?',
+          type: 'bonus'
+        },
+        {
+          questionId: 3,
+          question: '¿Te gusta el pan?',
+          type: 'bonus'
+        },
+        {
+          questionId: 4,
+          question: '¿Tienes hambre?',
+          type: 'tossUp'
+        },
+        {
+          questionId: 5,
+          question: '¿Que ladilla?',
+          type: 'tossUp'
+        },
+        {
+          questionId: 6,
+          question: '¿Te gusta pasticho?',
+          type: 'tossUp'
+        }
       ]
     }
   },
   created () {
-    // this.getServices()
+    this.questionRandom()
   },
   methods: {
-    point (point, id) {
-      this.teams.map(element => {
-        if (element.teamId === id) {
-          element.score += point
-          if (point < 0) {
-            console.log(this.sum)
-            this.sum[element.name] = true
-          }
+    point (point, id, btn) {
+      for (let disabled in this.disabled) {
+        if (disabled !== btn && !this.disabled[btn]) {
+          this.disabled[disabled] = !this.disabled[disabled]
+          this.teams.forEach((element) => {
+            if (element['teamId'] === id) {
+              if (this.dataPints['points'] === 0) {
+                this.dataPints['points'] = point
+                this.dataPints['id'] = id
+              } else {
+                this.dataPints['points'] = 0
+              }
+            }
+          })
         }
-      })
-      // this.points = point
-      // this.id = id
-      // if (point > 0 && !this.status.buttonG) {
-      //   this.changeStatus(1)
-      // } else if (point < 0 && !this.status.buttonF) {
-      //   this.changeStatus(0)
-      // }
+      }
     },
     saveRecords () {
       this.teams.map(element => {
-        if (element.teamId === this.id) {
-          element.score += this.points
-          this.points = 0
-          this.id = 0
-          this.status.buttonF = false
-          this.status.bonus = false
+        if (element['teamId'] === this.dataPints['id']) {
+          element.score += this.dataPints['points']
+          this.dataPints['id'] = 0
+          this.dataPints['points'] = 0
+          this.questionRandom()
+          for (let disabled in this.disabled) {
+            this.disabled[disabled] = false
+          }
         }
       })
+      if (this.dataPints['question']['type'] === 'bonus') {
+        this.teams[0]['score'] += Number(this.value['bonus1'])
+        this.teams[1]['score'] += Number(this.value['bonus2'])
+        this.value['bonus2'] = 0
+        this.value['bonus1'] = 0
+        this.questionRandom()
+      }
     },
-    changeStatus (data) {
-      // if (data > 0) {
-      //   this.status.buttonF = !this.status.buttonF
-      //   this.status.bonus = !this.status.bonus
-      // } else {
-      //   this.status.buttonG = !this.status.buttonG
-      //   this.status.bonus = !this.status.bonus
-      // }
-    },
-    getServices () {
-      console.log(this)
+    questionRandom () {
+      this.dataPints['question'] = this.question[Math.floor(Math.random() * 6)]
     }
   }
 }
