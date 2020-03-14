@@ -16,7 +16,7 @@
     "@quasar/extras": "^1.3.2",
     "@vue/babel-helper-vue-jsx-merge-props": "^1.0.0",
     "@vue/babel-preset-jsx": "^1.1.0",
-    "acorn": "^7.0.0",
+    "acorn": "^7.1.1",
     "auth": "git+https://oauth2:PXneCyd2TrMm3NQzVQyY@gitlab.com/kdevelopers/mydas-auth.git",
     "axios": "^0.18.1",
     "buefy": "^0.8.3",
